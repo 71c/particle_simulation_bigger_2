@@ -14,10 +14,14 @@ class Particle {
   PVector netForce;
   
   public Particle(PVector position, PVector velocity, PVector gravity, float radius, float mass) {
-    this(position, velocity, gravity, radius, mass, true, false);
+    this(position, velocity, gravity, radius, mass, false);
   }
   
-  public Particle(PVector position, PVector velocity, PVector gravity, float radius, float mass, boolean wallBounceOn, boolean collisionsOn) {
+  public Particle(PVector position, PVector velocity, PVector gravity, float radius, float mass, boolean collisionsOn) {
+    this(position, velocity, gravity, radius, mass, collisionsOn, true);
+  }
+  
+  public Particle(PVector position, PVector velocity, PVector gravity, float radius, float mass, boolean collisionsOn, boolean wallBounceOn) {
     netForce = new PVector(0, 0);
     acceleration = new PVector(0, 0);
     time = 0;
@@ -30,7 +34,7 @@ class Particle {
     this.gravity = gravity;
     this.radius = radius;
     this.mass = mass;
-    applyForce(gravity);
+    applyForce(PVector.mult(gravity, mass));
     this.wallBounceOn = wallBounceOn;
     this.collisionsOn = collisionsOn;
     hasCollided = false;
@@ -62,15 +66,11 @@ class Particle {
     if (wallBounceOn) {
       if (position.x + radius >= width || position.x - radius <= 0) {
         velocity.x = -velocity.x;
-      //} else if (position.y + radius >= height || position.y - radius <= 0) {
-      //  velocity.y = -velocity.y;
-      //}
-      } else if (position.y - radius <= 0) {
+      } else if (position.y + radius >= height || position.y - radius <= 0) {
         velocity.y = -velocity.y;
       }
       position.x = constrain(position.x, radius, width - radius);
-      //position.y = constrain(position.y, radius, height - radius);
-      position.y = constrain(position.y, radius, 100000);
+      position.y = constrain(position.y, radius, height - radius);
     }
     
     

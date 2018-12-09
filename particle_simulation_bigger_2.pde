@@ -1,6 +1,6 @@
 
 ArrayList<Particle> particles = new ArrayList<Particle>();
-int nParticles = 500;
+int nParticles = 100;
 float deltaTime = -1;
 float prevTime = 0;
 boolean isPlaying = true;
@@ -9,56 +9,39 @@ int timeBias = 0;
 
 int startPauseTime = 0;
 
-PVector gravity = new PVector(0, -300);
+PVector gravity = new PVector(0, -480);
 float defaultRadius = 15;
 float defaultMass = 1;
 
 void setup() {
   size(800, 500, P2D);
-  //size(200, 125, P2D);
-  //fullScreen(P2D);
   ellipseMode(RADIUS);
   addRandomParticles();
-  //particles.add(new Particle(new PVector(0, 0), new PVector(300, 300), new PVector(0, -300)));
-  
-  //frameRate(10);
+}
+
+float getRadius(float mass, float density) {
+  // area = pi * radius^2 = mass/density
+  return sqrt(mass / (PI * density));
+}
+
+PVector forceToVelocity(PVector force, float duration, float mass) {
+  return PVector.mult(force, duration / mass);
 }
 
 void addRandomParticles() {
   particles.clear();
-  //particles = new ArrayList<Particle>();
   for (int i = 0; i < nParticles; i++) {
-    //particles.add(new Particle(new PVector(random(width), random(height)), new PVector(random(600) - 300, random(600) - 300), gravity, defaultRadius, defaultMass));
-    
-    
-    //float mass = random(50, 200);
-    float mass = random(88, 162);
-    //float mass = 125;
+    float mass = random(69, 181);
     float density = 0.5;
+    float radius = getRadius(mass, density);
     
-    //float mass = random(88, 162);
-    //float mass = 125;
-    //float density = 8;
+    PVector appliedForce = new PVector(random(960000) - 480000, random(960000) - 480000);  /*new PVector(480000, 480000);*/
+    float duration = 0.0625;
+    PVector velocity = forceToVelocity(appliedForce, duration, mass);
     
-    float radius = sqrt(mass / (PI * density));
+    Particle p = new Particle(new PVector(random(width), random(height)), velocity, gravity, radius, mass, true);
     
-    
-    Particle p = new Particle(new PVector(random(width), random(height)), new PVector(0, 0), new PVector(0, -60000), radius, mass);
-    //Particle p = new Particle(new PVector(random(width), random(height)), new PVector(0, 0), new PVector(0, 0), radius, mass);
-    //Particle p = new Particle(new PVector(random(width), random(height)), new PVector(212, 212), new PVector(0, 0), radius, mass);
-    //p.applyTimedForce(new PVector(1000, 1000), 1);
-    //p.applyTimedForce(new PVector(30000, 30000), 1);
-    //p.applyTimedForce(new PVector(30000, 0), 1);
-    //p.applyTimedForce(new PVector(30000, 60000), 1);
-    //p.applyTimedForce(new PVector(120000, 240000), 0.25);
-    //p.applyTimedForce(new PVector(480000, 480000), 0.0625);
-    p.applyTimedForce(new PVector(random(960000) - 480000, random(960000) - 480000), 0.0625);
-    //p.applyTimedForce(new PVector(0, 0), 0.0625);
     particles.add(p);
-    // A = pi r^2
-    // d = m/A
-    // A = m / d
-    // r = sqrt(m / (pi d))
   }
 }
 
@@ -67,19 +50,17 @@ void addTwoCollidingParticles() {
   float density = 0.5;
   
   float m1 = random(50, 200);
-  //float m1 = 1000;
-  float r1 = sqrt(m1 / (PI * density));
+  float r1 = getRadius(m1, density);
   float m2 = random(50, 200);
-  //float m2 = 1000;
-  float r2 = sqrt(m2 / (PI * density));
+  float r2 = getRadius(m2, density);
   
   PVector pos1 = new PVector(random(width), random(height));
-  Particle p1 = new Particle(pos1, new PVector(0, 0), new PVector(0, 0), r1, m1);
+  Particle p1 = new Particle(pos1, new PVector(0, 0), new PVector(0, 0), r1, m1, true);
   
   PVector pos2 = new PVector(random(width), random(height));
   PVector v2 = PVector.sub(pos1, pos2);
   v2.setMag(300);
-  Particle p2 = new Particle(pos2, v2, new PVector(0, 0), r2, m2);
+  Particle p2 = new Particle(pos2, v2, new PVector(0, 0), r2, m2, true);
   
   particles.add(p1);
   particles.add(p2);
@@ -115,13 +96,6 @@ void draw() {
             other.velocity = newOtherVelocity;
             
             other.hasCollided = true;
-            
-            
-            //println(n)
-                        
-            //v1f = (m1 v1i - m2 v1i + 2 m2 v2i) / (m1 + m2)
-            //v1f = ((m1 - m2) v1i + (2 m2) v2i) / (m1 + m2)
-            //v1f = (m1 - m2) / (m1 + m2) v1i + (2 m2) / (m1 + m2) v2i
           }
         }
       }
@@ -139,8 +113,6 @@ void draw() {
 
 void keyPressed() {
   if (key == 'r') {
-    //particles.clear();
-    //particles.add(new Particle(new PVector(0, 0), new PVector(300, 300), gravity, defaultRadius, defaultMass));
     addRandomParticles();
     //addTwoCollidingParticles();
     if (!isPlaying)
