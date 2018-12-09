@@ -13,15 +13,15 @@ class Particle {
   ArrayList<Float> forceQueueTimes;
   PVector netForce;
   
-  public Particle(PVector position, PVector velocity, PVector gravity, float radius, float mass) {
-    this(position, velocity, gravity, radius, mass, false);
+  public Particle(PVector position, PVector velocity, PVector gravity, float mass, float radius) {
+    this(position, velocity, gravity, mass, radius, false);
   }
   
-  public Particle(PVector position, PVector velocity, PVector gravity, float radius, float mass, boolean collisionsOn) {
-    this(position, velocity, gravity, radius, mass, collisionsOn, true);
+  public Particle(PVector position, PVector velocity, PVector gravity, float mass, float radius, boolean collisionsOn) {
+    this(position, velocity, gravity, mass, radius, collisionsOn, true);
   }
   
-  public Particle(PVector position, PVector velocity, PVector gravity, float radius, float mass, boolean collisionsOn, boolean wallBounceOn) {
+  public Particle(PVector position, PVector velocity, PVector gravity, float mass, float radius, boolean collisionsOn, boolean wallBounceOn) {
     netForce = new PVector(0, 0);
     acceleration = new PVector(0, 0);
     time = 0;
@@ -73,14 +73,10 @@ class Particle {
       position.y = constrain(position.y, radius, height - radius);
     }
     
-    
     PVector halfDeltaV = PVector.mult(acceleration, t * 0.5);
     velocity.add(halfDeltaV);
     position.add(PVector.mult(velocity, t));
     velocity.add(halfDeltaV);
-    
-    //velocity.add(PVector.mult(acceleration, 0.016));
-    //position.add(PVector.mult(velocity, 0.016));
   }
   
   void applyForce(PVector appliedForce) {
@@ -95,12 +91,12 @@ class Particle {
   }
   
   float intersectionDist(Particle other) {
-    return position.dist(other.position) - radius - other.radius;
+    return -position.dist(other.position) + radius + other.radius;
   }
   
   boolean intersects(Particle other) {
     float distance = intersectionDist(other);
-    return distance <= 0;
+    return distance >= 0;
   }
   
 }
