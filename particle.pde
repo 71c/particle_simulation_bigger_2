@@ -48,6 +48,12 @@ class Particle {
   
   void show() {
     ellipse(position.x, height - position.y, radius, radius);
+    stroke(255);
+    float scale = 0.25;
+    // TODO: if (visualizeVelocity)   
+    line(position.x, height - position.y, position.x + velocity.x * scale, height - (position.y + velocity.y * scale));
+    // TODO: if (visualizeAcceleration)
+    line(position.x, height - position.y, position.x + acceleration.x * scale, height - (position.y + acceleration.y * scale));
   }
   
   void advance(float t) {
@@ -64,107 +70,49 @@ class Particle {
         i++;
       }
     }
-    
 
     
-    //if (wallBounceOn) {
-    //  if (position.x + radius >= width || position.x - radius <= 0) {
-    //    velocity.x = -velocity.x * elasticity;
-    //  } else if (position.y + radius >= height || position.y - radius <= 0) {
-    //    velocity.y = -velocity.y * elasticity;
-    //    //position.y = 2 * radius - position.y;
-    //    println(velocity.mag());
-    //  }
-    //  position.x = constrain(position.x, radius, width - radius);
-    //  position.y = constrain(position.y, radius, height - radius);
-    //}
+    move(t);
+  
+  
+
+  }
+  
+  // http://higuma.github.io/bouncing-balls/
+  void move(float t) {
+    boolean canAccelerateLeft = acceleration.x < 0 && position.x > radius;
+    boolean canAccelerateRight = acceleration.x > 0 && position.x < width - radius;
+    if (! wallBounceOn || canAccelerateLeft || canAccelerateRight) {
+      velocity.x += acceleration.x * t;
+    }
+    position.x += velocity.x * t;
     
-    
-    //velocity.add(PVector.mult(acceleration, t));
-    //position.add(PVector.mult(velocity, t));
-    
-    
-    
-    //position.x += velocity.x * t;
-    //if (position.x < radius) {
-    //  velocity.x = -velocity.x * elasticity;
-    //  position.x = 2 * radius - position.x;
-    //} else if (position.x >= width - radius) {
-    //  velocity.x = -velocity.x * elasticity;
-    //  position.x = 2 * (width - radius) - position.x;
-    //}
-    //if (position.y > radius) {
-    //  velocity.y += acceleration.y * t;
-    //}
-    //position.y += velocity.y * t;
-    //if (position.y >= height - radius) {
-    //  velocity.y = -velocity.y * elasticity;
-    //  position.y = 2 * (height - radius) - position.y;
-    //} else if (position.y < radius) {
-    //  velocity.y = -velocity.y * elasticity;
-    //  position.y = 2 * radius - position.y;
-    //  println(velocity.mag());
-    //}
-    
-    {
-      if (acceleration.x < 0 && position.x > radius) {
-        velocity.x += acceleration.x * t;
-      } else if (acceleration.x > 0 && position.x < width - radius) {
-        velocity.x += acceleration.x * t;
-      }
-      position.x += velocity.x * t;
+    if (wallBounceOn) {
       if (position.x < radius) {
         velocity.x = -velocity.x * elasticity;
         position.x = 2 * radius - position.x;
-        println(time + ", " + velocity.mag());
       } else if (position.x >= width - radius) {
         velocity.x = -velocity.x * elasticity;
         position.x = 2 * (width - radius) - position.x;
-        println(time + ", " + velocity.mag());
       }
-      
-      if (acceleration.y < 0 && position.y > radius) {
-        velocity.y += acceleration.y * t;
-      } else if (acceleration.y > 0 && position.y < height - radius) {
-        velocity.y += acceleration.y * t;
-      }
-      position.y += velocity.y * t;
-      
+    }
+    
+    boolean canAccelerateDown = acceleration.y < 0 && position.y > radius;
+    boolean canAccelerateUp = acceleration.y > 0 && position.y < height - radius;
+    if (! wallBounceOn || canAccelerateDown || canAccelerateUp) {
+      velocity.y += acceleration.y * t;
+    }
+    position.y += velocity.y * t;
+    
+    if (wallBounceOn) {
       if (position.y >= height - radius) {
         velocity.y = -velocity.y * elasticity;
         position.y = 2 * (height - radius) - position.y;
-        println(time + ", " + velocity.mag());
       } else if (position.y < radius) {
         velocity.y = -velocity.y * elasticity;
         position.y = 2 * radius - position.y;
-        println(time + ", " + velocity.mag());
       }
-    
     }
-    
-    
-    //position.x += velocity.x * t;
-    //if (position.x < radius) {
-    //  velocity.x = -velocity.x * elasticity;
-    //  position.x = 2 * radius - position.x;
-    //} else if (position.x >= width - radius) {
-    //  velocity.x = -velocity.x * elasticity;
-    //  position.x = 2 * (width - radius) - position.x;
-    //}
-    //if (position.y > radius) {
-    //  velocity.y += acceleration.y * t;
-    //}
-    //position.y += velocity.y * t;
-    //if (position.y >= height - radius) {
-    //  velocity.y = -velocity.y * elasticity;
-    //  position.y = 2 * (height - radius) - position.y;
-    //} else if (position.y < radius) {
-    //  velocity.y = -velocity.y * elasticity;
-    //  position.y = 2 * radius - position.y;
-    //}
-    
-
-
   }
   
   void applyForce(PVector appliedForce) {

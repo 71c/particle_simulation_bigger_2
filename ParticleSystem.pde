@@ -37,10 +37,10 @@ class ParticleSystem {
     this(g, collide, bounce, 0.5);
   }
 
-  ParticleSystem(PVector g, boolean collide, boolean bounce, float d) {
+  ParticleSystem(PVector g, boolean ballCollide, boolean wallBounce, float d) {
     gravity = g;
-    wallBounceOn = collide;
-    collisionsOn = bounce;
+    collisionsOn = ballCollide;
+    wallBounceOn = wallBounce;
     density = d;
     particles = new ArrayList<Particle>();
   }
@@ -73,14 +73,8 @@ class ParticleSystem {
         for (Particle other : particles) {
           float intersectionDist = p.intersectionDist(other);
           if (! p.equals(other) && intersectionDist >= 0) {
-            //float m1 = p.mass, m2 = other.mass;
-            //float M = m1 + m2;
-            //PVector v1i = p.velocity, v2i = other.velocity;
-            //p.velocity = PVector.add(PVector.mult(v1i, (m1 - m2) / M), PVector.mult(v2i, 2 * m2 / M));
-            //other.velocity = PVector.add(PVector.mult(v1i, 2 * m1 / M), PVector.mult(v2i, (m2 - m1) / M));
             
             PVector extraPos = PVector.sub(p.position, other.position).setMag(intersectionDist);
-            //extraPos.mult(0.5);
             p.position.add(extraPos);
             other.position.add(extraPos.mult(-1));
             
@@ -153,7 +147,7 @@ class ParticleSystem {
     PVector pos2 = randomPosition();
     PVector v2 = PVector.sub(pos1, pos2);
     v2.setMag(initialVelocity);
-    v2.rotate(PI / 80.0);
+    //v2.rotate(PI / 80.0);
     Particle p2 = new Particle(pos2, v2, new PVector(0, 0), m2, r2, true, true);
     
     particles.add(p1);
