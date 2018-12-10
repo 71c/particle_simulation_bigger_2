@@ -13,6 +13,7 @@ class Particle {
   ArrayList<Float> forceQueueTimes;
   PVector netForce;
   /* todo add elasticity */
+  float elasticity = 1;
   
   public Particle(PVector position, PVector velocity, PVector gravity, float mass, float radius) {
     this(position, velocity, gravity, mass, radius, false);
@@ -64,51 +65,102 @@ class Particle {
       }
     }
     
-    if (wallBounceOn) {
-      if (position.x + radius >= width || position.x - radius <= 0) {
-        velocity.x = -velocity.x;
-        //position.x = constrain(position.x, radius, width - radius);
-        //return;
+
+    
+    //if (wallBounceOn) {
+    //  if (position.x + radius >= width || position.x - radius <= 0) {
+    //    velocity.x = -velocity.x * elasticity;
+    //  } else if (position.y + radius >= height || position.y - radius <= 0) {
+    //    velocity.y = -velocity.y * elasticity;
+    //    //position.y = 2 * radius - position.y;
+    //    println(velocity.mag());
+    //  }
+    //  position.x = constrain(position.x, radius, width - radius);
+    //  position.y = constrain(position.y, radius, height - radius);
+    //}
+    
+    
+    //velocity.add(PVector.mult(acceleration, t));
+    //position.add(PVector.mult(velocity, t));
+    
+    
+    
+    //position.x += velocity.x * t;
+    //if (position.x < radius) {
+    //  velocity.x = -velocity.x * elasticity;
+    //  position.x = 2 * radius - position.x;
+    //} else if (position.x >= width - radius) {
+    //  velocity.x = -velocity.x * elasticity;
+    //  position.x = 2 * (width - radius) - position.x;
+    //}
+    //if (position.y > radius) {
+    //  velocity.y += acceleration.y * t;
+    //}
+    //position.y += velocity.y * t;
+    //if (position.y >= height - radius) {
+    //  velocity.y = -velocity.y * elasticity;
+    //  position.y = 2 * (height - radius) - position.y;
+    //} else if (position.y < radius) {
+    //  velocity.y = -velocity.y * elasticity;
+    //  position.y = 2 * radius - position.y;
+    //  println(velocity.mag());
+    //}
+    
+    {
+      if (acceleration.x < 0 && position.x > radius) {
+        velocity.x += acceleration.x * t;
+      } else if (acceleration.x > 0 && position.x < width - radius) {
+        velocity.x += acceleration.x * t;
       }
-      if (position.y + radius >= height || position.y - radius <= 0) {
-        velocity.y = -velocity.y;
-        //position.y = constrain(position.y, radius, height - radius);
-        //return;
+      position.x += velocity.x * t;
+      if (position.x < radius) {
+        velocity.x = -velocity.x * elasticity;
+        position.x = 2 * radius - position.x;
+        println(time + ", " + velocity.mag());
+      } else if (position.x >= width - radius) {
+        velocity.x = -velocity.x * elasticity;
+        position.x = 2 * (width - radius) - position.x;
+        println(time + ", " + velocity.mag());
       }
-      position.x = constrain(position.x, radius, width - radius);
-      position.y = constrain(position.y, radius, height - radius);
+      
+      if (acceleration.y < 0 && position.y > radius) {
+        velocity.y += acceleration.y * t;
+      } else if (acceleration.y > 0 && position.y < height - radius) {
+        velocity.y += acceleration.y * t;
+      }
+      position.y += velocity.y * t;
+      
+      if (position.y >= height - radius) {
+        velocity.y = -velocity.y * elasticity;
+        position.y = 2 * (height - radius) - position.y;
+        println(time + ", " + velocity.mag());
+      } else if (position.y < radius) {
+        velocity.y = -velocity.y * elasticity;
+        position.y = 2 * radius - position.y;
+        println(time + ", " + velocity.mag());
+      }
+    
     }
     
-    //PVector halfDeltaV = PVector.mult(acceleration, t * 0.5);
-    //velocity.add(halfDeltaV);
-    //position.add(PVector.mult(velocity, t));
-    //velocity.add(halfDeltaV);
     
-    //position.add(PVector.add(PVector.mult(velocity, t), PVector.mult(acceleration, t*t*0.5)));
-    //velocity.add(PVector.mult(acceleration, t));
-    
-    
-    //velocity.add(PVector.mult(acceleration, 0.016));
-    //position.add(PVector.mult(velocity, 0.016));
-    
-    //PVector dx1 = PVector.add(PVector.mult(velocity.copy(), t), PVector.mult(acceleration.copy(), t*t*0.5));
-    //PVector dv = PVector.mult(acceleration.copy(), t);
-    //PVector dx2 = PVector.mult(velocity.copy(), t);
-    //velocity.add(dv.copy());
-    //float w1 = 0;
-    ////position.add(PVector.add(PVector.mult(dx1, w1), PVector.mult(dx2, 1 - w1)));
-    //position.add(dx2.copy());
-    
-    
-    
-    
-    velocity.add(PVector.mult(acceleration, t));
-    position.add(PVector.mult(velocity, t));
-    
-    
-    //if (! (position.y + radius > height || position.y - radius < 0)) {
-    //  position.add(PVector.add(PVector.mult(velocity, t), PVector.mult(acceleration, t*t*0.5)));
-    //  velocity.add(PVector.mult(acceleration, t));
+    //position.x += velocity.x * t;
+    //if (position.x < radius) {
+    //  velocity.x = -velocity.x * elasticity;
+    //  position.x = 2 * radius - position.x;
+    //} else if (position.x >= width - radius) {
+    //  velocity.x = -velocity.x * elasticity;
+    //  position.x = 2 * (width - radius) - position.x;
+    //}
+    //if (position.y > radius) {
+    //  velocity.y += acceleration.y * t;
+    //}
+    //position.y += velocity.y * t;
+    //if (position.y >= height - radius) {
+    //  velocity.y = -velocity.y * elasticity;
+    //  position.y = 2 * (height - radius) - position.y;
+    //} else if (position.y < radius) {
+    //  velocity.y = -velocity.y * elasticity;
+    //  position.y = 2 * radius - position.y;
     //}
     
 

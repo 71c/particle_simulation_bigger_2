@@ -7,7 +7,7 @@ class ParticleSystem {
   boolean wallBounceOn;
   boolean collisionsOn;
   float density;
-  float elasticity = 0.7;
+  float elasticity = 1;
   
   float totalK() {
     float total = 0;
@@ -80,6 +80,7 @@ class ParticleSystem {
             //other.velocity = PVector.add(PVector.mult(v1i, 2 * m1 / M), PVector.mult(v2i, (m2 - m1) / M));
             
             PVector extraPos = PVector.sub(p.position, other.position).setMag(intersectionDist);
+            //extraPos.mult(0.5);
             p.position.add(extraPos);
             other.position.add(extraPos.mult(-1));
             

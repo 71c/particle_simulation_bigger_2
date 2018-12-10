@@ -1,5 +1,5 @@
 
-int nParticles = 20;
+int nParticles = 1;
 boolean isPlaying = true;
 
 float deltaTime = -1;
@@ -12,7 +12,7 @@ ParticleSystem ps;
 void setup() {
   size(800, 500, P2D);
   ellipseMode(RADIUS);
-  ps = new ParticleSystem(new PVector(0, -480), true, true);
+  ps = new ParticleSystem(new PVector(0, 480), true, true);
 }
 
 
@@ -21,9 +21,6 @@ void draw() {
   
   ps.run(deltaTime);
   
-  if (random(1) < 0.1)
-    println(millis() + ", " + ps.totalE());
-  //println(ps.totalK());
   //println(ps.totalE());
   
   deltaTime = getTime() - prevTime;
@@ -33,8 +30,8 @@ void draw() {
 
 void keyPressed() {
   if (key == 'r') {
-    ps.addRandomParticles(nParticles, 50, 200, true, 20000, 30000);
-    //ps.addRandomParticles(nParticles, 50, 200, true, 0, 0);
+    //ps.addRandomParticles(nParticles, 50, 200, true, 20000, 30000);
+    ps.addRandomParticles(nParticles, 50, 200, true, 0, 0);
     //ps.addTwoCollidingParticles(50, 200, 300);
     if (!isPlaying)
       play();
