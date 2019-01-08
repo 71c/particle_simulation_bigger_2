@@ -105,8 +105,12 @@ class ParticleSystem {
         p1.hasCollided = false;
       } else {
         for (Particle p2 : particles) {
+          if (p1.equals(p2)) {
+            continue;
+          }
+          
           float intersectionDist = p1.intersectionDist(p2);
-          if (! p1.equals(p2) && intersectionDist >= 0) {
+          if (intersectionDist >= 0) {
             PVector extraPos = PVector.sub(p1.position, p2.position).setMag(intersectionDist * 0.5);
             p1.position.add(extraPos);
             p2.position.add(extraPos.mult(-1));
@@ -124,8 +128,8 @@ class ParticleSystem {
             //p2.velocity.rotate(angle);
             
             float angle = PVector.sub(p1.position, p2.position).heading();
-            p1.velocity.rotate(-angle).mult(elasticity);
-            p2.velocity.rotate(-angle).mult(elasticity);
+            p1.velocity.rotate(-angle);
+            p2.velocity.rotate(-angle);
             float vx1 = p1.velocity.x;
             float vx2 = p2.velocity.x;
             float totalM = p1.mass + p2.mass;
@@ -138,8 +142,6 @@ class ParticleSystem {
             p1.velocity.rotate(angle);
             p2.velocity.rotate(angle);
             
-            println("COLLISION");
-
             p2.hasCollided = true;
             p1.hasCollided = true;
           }
