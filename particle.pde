@@ -15,6 +15,7 @@ class Particle {
   float elasticity;
   boolean visualizeVelocity = false;
   boolean visualizeAcceleration = false;
+  boolean touchingAnyParticles = false;
 
 
   public Particle(PVector position, PVector velocity, PVector gravity, float mass, float radius) {
@@ -119,9 +120,9 @@ class Particle {
 
   // http://higuma.github.io/bouncing-balls/
   void move(float t) {
-    boolean canAccelerateLeft = acceleration.x < 0 && position.x > radius;
-    boolean canAccelerateRight = acceleration.x > 0 && position.x < width - radius;
-    if (! wallBounceOn || canAccelerateLeft || canAccelerateRight) {
+    boolean canAccelerateLeft = position.x > radius;
+    boolean canAccelerateRight = position.x < width - radius;
+    if (! wallBounceOn || canAccelerateLeft && canAccelerateRight /*&& !touchingAnyParticles*/) {
       velocity.x += acceleration.x * t;
     }
     position.x += velocity.x * t;
@@ -130,28 +131,29 @@ class Particle {
     if (wallBounceOn) {
       if (position.x < radius) {
         // bounce by flipping velocity x. dampen by elasticity
-        velocity.x = -velocity.x * elasticity;
+        velocity.x = -velocity.x * elasticity;    velocity.y *= elasticity;
         // this works like magic. found it in code of a similar physics simulator
         position.x = 2 * radius - position.x;
       } else if (position.x >= width - radius) { // same thing but on the other side of the wall
-        velocity.x = -velocity.x * elasticity;
+        velocity.x = -velocity.x * elasticity;   velocity.y *= elasticity;
         position.x = 2 * (width - radius) - position.x;
       }
     }
 
-    boolean canAccelerateDown = acceleration.y < 0 && position.y > radius;
-    boolean canAccelerateUp = acceleration.y > 0 && position.y < height - radius;
-    if (! wallBounceOn || canAccelerateDown || canAccelerateUp) {
+    boolean canAccelerateDown = position.y > radius;
+    boolean canAccelerateUp = position.y < height - radius;
+    //println(touchingAnyParticles);
+    if (! wallBounceOn || canAccelerateDown && canAccelerateUp /*&& !touchingAnyParticles*/) {
       velocity.y += acceleration.y * t;
     }
     position.y += velocity.y * t;
 
     if (wallBounceOn) {
       if (position.y >= height - radius) {
-        velocity.y = -velocity.y * elasticity;
+        velocity.y = -velocity.y * elasticity;     velocity.x *= elasticity;
         position.y = 2 * (height - radius) - position.y;
       } else if (position.y < radius) {
-        velocity.y = -velocity.y * elasticity;
+        velocity.y = -velocity.y * elasticity;     velocity.x *= elasticity;
         position.y = 2 * radius - position.y;
       }
     }

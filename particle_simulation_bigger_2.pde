@@ -55,7 +55,7 @@ void setup() {
   nSlider = cp5.addSlider("changeN")
      .setPosition(100,80)
      //.setSize(100, 20)
-     .setRange(0,40)
+     .setRange(0,100)
      .setValue(10)
      .setCaptionLabel("particles")
      ;

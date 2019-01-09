@@ -101,50 +101,38 @@ class ParticleSystem {
 
   void applyCollisions() {
     for (Particle p1 : particles) {
-      if (p1.hasCollided) {
-        p1.hasCollided = false;
-      } else {
-        for (Particle p2 : particles) {
-          if (p1.equals(p2)) {
-            continue;
-          }
+      p1.touchingAnyParticles = false;
+      for (Particle p2 : particles) {
+        if (p1.equals(p2)) {
+          continue;
+        }
+        
+        float intersectionDist = p1.intersectionDist(p2);
+        if (intersectionDist >= 0) {
           
-          float intersectionDist = p1.intersectionDist(p2);
-          if (intersectionDist >= 0) {
-            PVector extraPos = PVector.sub(p1.position, p2.position).setMag(intersectionDist * 0.5);
-            p1.position.add(extraPos);
-            p2.position.add(extraPos.mult(-1));
-
-            //float angle = PVector.sub(p1.position, p2.position).heading();
-            //p1.velocity.rotate(-angle).mult(elasticity);
-            //p2.velocity.rotate(-angle).mult(elasticity);
-            //float vx1 = p1.velocity.x;
-            //float vx2 = p2.velocity.x;
-            //float totalM = p1.mass + p2.mass;
-            //float diffM = p1.mass - p2.mass;
-            //p1.velocity.x = (diffM * vx1 + 2 * p2.mass * vx2) / totalM;
-            //p2.velocity.x = (-diffM * vx2 + 2 * p1.mass * vx1) / totalM;
-            //p1.velocity.rotate(angle);
-            //p2.velocity.rotate(angle);
-            
-            float angle = PVector.sub(p1.position, p2.position).heading();
-            p1.velocity.rotate(-angle);
-            p2.velocity.rotate(-angle);
-            float vx1 = p1.velocity.x;
-            float vx2 = p2.velocity.x;
-            float totalM = p1.mass + p2.mass;
-            float diffM = p1.mass - p2.mass;
-            float vx1E = (diffM * vx1 + 2 * p2.mass * vx2) / totalM;
-            float vx2E = (-diffM * vx2 + 2 * p1.mass * vx1) / totalM;
-            float vxI  = (p1.mass * vx1 + p2.mass * vx2) / totalM;
-            p1.velocity.x = vx1E * elasticity + vxI * (1 - elasticity);
-            p2.velocity.x = vx2E * elasticity + vxI * (1 - elasticity);
-            p1.velocity.rotate(angle);
-            p2.velocity.rotate(angle);
-            
-            p2.hasCollided = true;
-            p1.hasCollided = true;
-          }
+          PVector extraPos = PVector.sub(p1.position, p2.position).setMag(intersectionDist * 1);
+          float angleBetween = PVector.angleBetween(extraPos, gravity);
+          float prop = 1 - angleBetween / PI;
+          p2.position.add(PVector.mult(extraPos, -prop));
+          p1.position.add(PVector.mult(extraPos, 1 - prop));
+          
+          float angle = PVector.sub(p1.position, p2.position).heading();
+          p1.velocity.rotate(-angle);
+          p2.velocity.rotate(-angle);
+          float vx1 = p1.velocity.x;
+          float vx2 = p2.velocity.x;
+          float totalM = p1.mass + p2.mass;
+          float diffM = p1.mass - p2.mass;
+          float vx1E = (diffM * vx1 + 2 * p2.mass * vx2) / totalM;
+          float vx2E = (-diffM * vx2 + 2 * p1.mass * vx1) / totalM;
+          float vxI  = (p1.mass * vx1 + p2.mass * vx2) / totalM;
+          p1.velocity.x = vx1E * elasticity + vxI * (1 - elasticity);
+          p2.velocity.x = vx2E * elasticity + vxI * (1 - elasticity);
+          p1.velocity.rotate(angle);
+          p2.velocity.rotate(angle);
+          
+          p1.touchingAnyParticles = true;
+          p2.touchingAnyParticles = true;
         }
       }
     }
